@@ -53,27 +53,27 @@ namespace LayerList
 
                 foreach (ObjectId objid in lt)
                 {
-                    LayerTableRecord ltr = trans.GetObject(objid,
-                                                             OpenMode.ForRead) as LayerTableRecord;
-
+                    LayerTableRecord ltr = trans.GetObject(objid, OpenMode.ForRead) as LayerTableRecord;
                     string LayerName = ltr.Name;
 
-                    BlockTable bt = trans.GetObject(db.BlockTableId,
-                                                    OpenMode.ForRead) as BlockTable;
+                    TextStyleTable TxtStylTbl = trans.GetObject(db.TextStyleTableId, OpenMode.ForRead) as TextStyleTable;
+                    string StylName = "Standard";
 
-                    BlockTableRecord btr = trans.GetObject(bt[BlockTableRecord.ModelSpace],
-                                                            OpenMode.ForWrite) as BlockTableRecord;
+                    BlockTable bt = trans.GetObject(db.BlockTableId, OpenMode.ForRead) as BlockTable;
+                    BlockTableRecord btr = trans.GetObject(bt[BlockTableRecord.ModelSpace], OpenMode.ForWrite) as BlockTableRecord;
 
                     DBText text = new DBText();
                     text.SetDatabaseDefaults();
                     text.Position = new Point3d(ispt.X, ispt.Y, 0);
                     text.Height = txtH * dimscale;
                     text.TextString = LayerName;
+                    text.Layer = LayerName;
+                    text.TextStyleId = TxtStylTbl[StylName];
 
                     btr.AppendEntity(text);
                     trans.AddNewlyCreatedDBObject(text, true);
 
-                    ispt = new Point3d(ispt.X, ispt.Y - (text.Height * dimscale) - (1 * dimscale), 0);
+                    ispt = new Point3d(ispt.X, ispt.Y - (text.Height * dimscale * 2), 0);
                 }
                 trans.Commit();
             }
